@@ -1,0 +1,59 @@
+print("Query 01")
+// The highest salary of clerks
+
+print("Query 02")
+// The total salary of managers
+
+print("Query 03")
+// The lowest, average and highest salary of the employees
+
+print("Query 04")
+// The name of the departments
+
+print("Query 05")
+// For each job: the job and the average salary for that job
+
+print("Query 06")
+// For each department: its name, the number of employees and the average salary in that department (null departments excluded)
+
+print("Query 07")
+// The highest of the per-department average salary (null departments excluded)
+
+print("Query 08")
+// The name of the departments with at least 5 employees (null departments excluded)
+
+print("Query 09")
+// The cities where at least 2 missions took place
+
+print("Query 10")
+// The highest salary
+
+print("Query 11")
+// The name of the departments with the highest average salary
+
+print("Query 12")
+// For each city in which a mission took place, its name (output field "city") and the number of missions in that city
+
+print("Query 13")
+// The name of the departments with at most 5 employees
+
+print("Query 14")
+// The average salary of analysts
+
+print("Query 15")
+// The lowest of the per-job average salary
+
+print("Query 16")
+// For each department: its name and the highest salary in that department
+
+print("Query 17")
+// The number of employees
+
+print("Query 18")
+// One of the employees, with pretty printing (2 methods)
+
+print("Query 19")
+// All the information about employees, except their salary, commission and missions
+
+print("Query 20")
+// The name and salary of all the employees (without the field _id)
