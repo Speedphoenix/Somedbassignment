@@ -1,4 +1,12 @@
+import pymongo
+myclient = pymongo.MongoClient('mongodb://localhost:27017/')
+mydb = myclient['company']
+employees = mydb['employees']
+
 print("Query 01")
+
+# the next() method goes to the next element of an iterator or iterable.
+employees.find({"job": "clerk"}, { "salary": 1, "_id": 0 }).sort("salary", -1).next()
 # The highest salary of clerks
 
 print("Query 02")
