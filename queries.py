@@ -16,7 +16,7 @@ print("Query 02")
 
 print("Query 03")
 # The lowest, average and highest salary of the employees
-pipeline = [
+pipeline3 = [
     {
         "$group": {
             "_id": None,
@@ -31,13 +31,26 @@ pipeline = [
         }
     }
 ]
-employees.aggregate(pipeline).next()
+employees.aggregate(pipeline3).next()
+
 
 print("Query 04")
 # The name of the departments
 
+
 print("Query 05")
 # For each job: the job and the average salary for that job
+pipeline5 = [
+  {
+    "$group": {
+      "_id": "$job",
+      "averageSalary": { "$avg": "$salary" }
+    }
+  }
+]
+for el in employees.aggregate(pipeline5):
+    print(el)
+
 
 print("Query 06")
 # For each department: its name, the number of employees and the average salary in that department (null departments excluded)

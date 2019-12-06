@@ -37,8 +37,18 @@ db.employees.aggregate([
 print("Query 04")
 // The name of the departments
 
+
 print("Query 05")
 // For each job: the job and the average salary for that job
+db.employees.aggregate([
+  {
+    $group: {
+      _id: "$job",
+      averageSalary: { $avg: "$salary" }
+    }
+  }
+]);
+
 
 print("Query 06")
 // For each department: its name, the number of employees and the average salary in that department (null departments excluded)
