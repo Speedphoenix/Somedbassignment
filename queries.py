@@ -55,8 +55,28 @@ for el in employees.aggregate(pipeline5):
 print("Query 06")
 # For each department: its name, the number of employees and the average salary in that department (null departments excluded)
 
+
 print("Query 07")
 # The highest of the per-department average salary (null departments excluded)
+pipeline7 = [
+  {
+    "$group": {
+      "_id": "$department",
+      "averageSalary": { "$avg": "$salary" }
+    }
+  },
+  {
+    "$group": {
+      "_id": None,
+      "highestAvgSalary": { "$max": "$averageSalary" }
+    }
+  },
+  {
+    "$project": { "_id": 0 }
+  }
+]
+employees.aggregate(pipeline7).next()
+
 
 print("Query 08")
 # The name of the departments with at least 5 employees (null departments excluded)
