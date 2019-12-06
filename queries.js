@@ -1,5 +1,17 @@
-print("Query 01")
+db = db.getSiblingDB("company");
+// now do stuff with db.employees
+
+// to run the files in the mongo shell use
+// load("queries.js");
+
+print("Query 01");
+db.employees.find({ "job": "clerk" }, { "salary": 1, "_id": 0 }).sort({salary:-1}).limit(1)
+
+// or, to get the whole employee instead of just the salary
+// db.employees.find({ "job": "clerk" }).sort({salary:-1}).limit(1)
+
 // The highest salary of clerks
+
 
 print("Query 02")
 // The total salary of managers
