@@ -58,6 +58,15 @@ print("Query 07")
 // The highest of the per-department average salary (null departments excluded)
 db.employees.aggregate([
   {
+    // to exclude null elements
+    $match: {
+      department: {
+        $exists: true,
+        $ne: null
+      }
+    }
+  },
+  {
     $group: {
       _id: "$department",
       averageSalary: { $avg: "$salary" }
@@ -78,14 +87,70 @@ db.employees.aggregate([
 print("Query 08")
 // The name of the departments with at least 5 employees (null departments excluded)
 
+
 print("Query 09")
 // The cities where at least 2 missions took place
+db.employees.aggregate([
+  {
+    $project: {
+      _id: 0,
+      missions: 1
+    }
+  },
+  {
+    $unwind: "$missions"
+  },
+  {
+    $group: {
+      _id: "$missions.location",
+      sum: { $sum: 1 }
+    }
+  },
+  {
+    $match: {
+      sum: { $gte: 2 }
+    }
+  },
+  {
+    $project: { _id: 1 }
+  }
+]);
+
 
 print("Query 10")
 // The highest salary
 
+
 print("Query 11")
 // The name of the departments with the highest average salary
+db.employees.aggregate([
+  {
+    $match: {
+      department: {
+        $exists: true,
+        $ne: null
+      }
+    }
+  },
+  {
+    $group: {
+      _id: "$department",
+      averageSalary: {
+        $avg: "$salary"
+      }
+    }
+  },
+  {
+    $sort: { averageSalary: -1 }
+  },
+  {
+    $limit: 1
+  },
+  {
+    $project: { _id: 1 }
+  }
+]);
+
 
 print("Query 12")
 // For each city in which a mission took place, its name (output field "city") and the number of missions in that city

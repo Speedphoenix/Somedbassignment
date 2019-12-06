@@ -7,7 +7,7 @@ print("Query 01")
 # The highest salary of clerks
 
 # the next() method goes to the next element of an iterator or iterable.
-employees.find({"job": "clerk"}, { "salary": 1, "_id": 0 }).sort("salary", -1).next()
+print(employees.find({"job": "clerk"}, { "salary": 1, "_id": 0 }).sort("salary", -1).next())
 
 
 print("Query 02")
@@ -31,7 +31,7 @@ pipeline3 = [
         }
     }
 ]
-employees.aggregate(pipeline3).next()
+print(employees.aggregate(pipeline3).next())
 
 
 print("Query 04")
@@ -41,12 +41,12 @@ print("Query 04")
 print("Query 05")
 # For each job: the job and the average salary for that job
 pipeline5 = [
-  {
-    "$group": {
-      "_id": "$job",
-      "averageSalary": { "$avg": "$salary" }
+    {
+        "$group": {
+            "_id": "$job",
+            "averageSalary": { "$avg": "$salary" }
+        }
     }
-  }
 ]
 for el in employees.aggregate(pipeline5):
     print(el)
@@ -59,36 +59,103 @@ print("Query 06")
 print("Query 07")
 # The highest of the per-department average salary (null departments excluded)
 pipeline7 = [
-  {
-    "$group": {
-      "_id": "$department",
-      "averageSalary": { "$avg": "$salary" }
+    {
+        "$match": {
+            "department": {
+                "$exists": True,
+                "$ne": None
+            }
+        }
+    },
+     {
+        "$group": {
+            "_id": "$department",
+            "averageSalary": { "$avg": "$salary" }
+        }
+    },
+    {
+        "$group": {
+            "_id": None,
+            "highestAvgSalary": { "$max": "$averageSalary" }
+        }
+    },
+    {
+        "$project": { "_id": 0 }
     }
-  },
-  {
-    "$group": {
-      "_id": None,
-      "highestAvgSalary": { "$max": "$averageSalary" }
-    }
-  },
-  {
-    "$project": { "_id": 0 }
-  }
 ]
-employees.aggregate(pipeline7).next()
+print(employees.aggregate(pipeline7).next())
 
 
 print("Query 08")
 # The name of the departments with at least 5 employees (null departments excluded)
 
+
 print("Query 09")
 # The cities where at least 2 missions took place
+pipeline9 = [
+    {
+        "$project": {
+            "_id": 0,
+            "missions": 1
+        }
+    },
+    {
+        "$unwind": "$missions"
+    },
+    {
+        "$group": {
+            "_id": "$missions.location",
+            "sum": { "$sum": 1 }
+        }
+    },
+    {
+        "$match": {
+            "sum": { "$gte": 2 }
+        }
+    },
+    {
+        "$project": { "_id": 1 }
+    }
+]
+for el in employees.aggregate(pipeline9):
+    print(el)
+
 
 print("Query 10")
 # The highest salary
 
+
 print("Query 11")
 # The name of the departments with the highest average salary
+pipeline11 = [
+    {
+        "$match": {
+            "department": {
+                "$exists": True,
+                "$ne": None
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$department",
+            "averageSalary": {
+                "$avg": "$salary"
+            }
+        }
+    },
+    {
+        "$sort": { "averageSalary": -1 }
+    },
+    {
+        "$limit": 1
+    },
+    {
+        "$project": { "_id": 1 }
+    }
+]
+print(employees.aggregate(pipeline11).next())
+
 
 print("Query 12")
 # For each city in which a mission took place, its name (output field "city") and the number of missions in that city
