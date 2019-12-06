@@ -5,19 +5,34 @@ db = db.getSiblingDB("company");
 // load("queries.js");
 
 print("Query 01");
+// The highest salary of clerks
+
 db.employees.find({ "job": "clerk" }, { "salary": 1, "_id": 0 }).sort({salary:-1}).limit(1)
 
 // or, to get the whole employee instead of just the salary
 // db.employees.find({ "job": "clerk" }).sort({salary:-1}).limit(1)
 
-// The highest salary of clerks
-
 
 print("Query 02")
 // The total salary of managers
 
+
 print("Query 03")
 // The lowest, average and highest salary of the employees
+db.employees.aggregate([
+  {
+    $group : {
+      _id: null,
+      lowest: {$min: "$salary"},
+      average: {$avg: "$salary"},
+      highest: {$max: "$salary"}
+    }
+  },
+  {
+    $project: {_id: 0}
+  }
+]);
+
 
 print("Query 04")
 // The name of the departments

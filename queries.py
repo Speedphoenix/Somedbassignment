@@ -4,16 +4,34 @@ mydb = myclient['company']
 employees = mydb['employees']
 
 print("Query 01")
+# The highest salary of clerks
 
 # the next() method goes to the next element of an iterator or iterable.
 employees.find({"job": "clerk"}, { "salary": 1, "_id": 0 }).sort("salary", -1).next()
-# The highest salary of clerks
+
 
 print("Query 02")
 # The total salary of managers
 
+
 print("Query 03")
 # The lowest, average and highest salary of the employees
+pipeline = [
+    {
+        "$group": {
+            "_id": None,
+            "lowest": {"$min": "$salary"},
+            "average": {"$avg": "$salary"},
+            "highest": {"$max": "$salary" }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0
+        }
+    }
+]
+employees.aggregate(pipeline).next()
 
 print("Query 04")
 # The name of the departments
