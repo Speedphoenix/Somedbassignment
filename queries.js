@@ -84,13 +84,22 @@ db.employees.aggregate([
 
 print("Query 06")
 // For each department: its name, the number of employees and the average salary in that department (null departments excluded)
-/// in sql :SELECT COUNT(*) AS count, AVG(SAL) AS average, dept.DNAME FROM emp INNER JOIN dept ON emp.DID = dept.DID GROUP BY dept.DNAME
 //POSSIBLE
 db.employees.aggregate([
   {
+    // to exclude null elements
+    $match: {
+      department: {
+        $exists: true,
+        $ne: null
+      }
+    }
+  },
+  {
     $group: {
-      _id: {department : "$name"},
-      countEmployees: { $sum:{1} }
+      _id: "$department.name",
+      averageSalary: { $avg: "$salary" },
+      number_of_employees: { $sum: 1 }
     }
   }
 ]);
@@ -250,7 +259,7 @@ print("Query 17")
 db.employees.aggregate( [
    { $group: { _id: null, number_of_employees: { $sum: 1 } } },
    { $project: { _id: 0 } }
-] );
+]);
 
 print("Query 18")
 // One of the employees, with pretty printing (2 methods)
