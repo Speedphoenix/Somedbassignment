@@ -190,14 +190,14 @@ db.employees.aggregate([
 print("Query 11")
 // The name of the departments with the highest average salary
 db.employees.aggregate([
-  {
+  /*{
     $match: {
       department: {
         $exists: true,
         $ne: null
       }
     }
-  },
+  },*/
   {
     $group: {
       _id: "$department",
@@ -304,6 +304,32 @@ db.employees.aggregate([
 
 print("Query 16")
 // For each department: its name and the highest salary in that department
+db.employees.aggregate([
+  /*{
+    $match: {
+      department: {
+        $exists: true,
+        $ne: null
+      }
+    }
+  },*/
+  {
+    $group: {
+      _id: "$department",
+      highestSalary: {
+        $max: "$salary",
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      name: "$_id.name",
+      highestSalary: 1
+    }
+  }
+]);
+
 
 print("Query 17")
 // The number of employees
@@ -318,6 +344,15 @@ print("Query 18")
 
 print("Query 19")
 // All the information about employees, except their salary, commission and missions
+db.employees.aggregate([
+  {
+    $project: {
+      salary: 0,
+      commission: 0,
+      missions: 0
+    }
+  }
+]);
 
 print("Query 20")
 // The name and salary of all the employees (without the field _id)
