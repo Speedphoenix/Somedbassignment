@@ -227,6 +227,33 @@ for el in employees.aggregate(pipeline15):
 
 print("Query 16")
 # For each department: its name and the highest salary in that department
+pipeline16 = [
+    {
+        "$match": {
+            "department": {
+                "$exists": True,
+                "$ne": None
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$department",
+            "highestSalary": {
+                "$max": "$salary",
+            }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "name": "$_id.name",
+            "highestSalary": 1
+        }
+    }
+]
+for el in employees.aggregate(pipeline16):
+    print(el)
 
 print("Query 17")
 # The number of employees
@@ -236,6 +263,8 @@ print("Query 18")
 
 print("Query 19")
 # All the information about employees, except their salary, commission and missions
+for el in employees.aggregate(pipeline15):
+    print(el)
 
 print("Query 20")
 # The name and salary of all the employees (without the field _id)
