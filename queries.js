@@ -7,7 +7,7 @@ db = db.getSiblingDB("company");
 print("Query 01");
 // The highest salary of clerks
 
-db.employees.find({ "job": "clerk" }, { "salary": 1, "_id": 0 }).sort({salary:-1}).limit(1)
+db.employees.find({ "job": "clerk" }, { "salary": 1, "_id": 0 }).sort({salary:-1}).limit(1);
 
 // or, to get the whole employee instead of just the salary
 // db.employees.find({ "job": "clerk" }).sort({salary:-1}).limit(1)
@@ -162,12 +162,21 @@ db.employees.aggregate([
 print("Query 10")
 // The highest salary
 //POSSIBLE
-db.employees.find({
 
-},{
-	"Max(SAL)": 1
-}
-);
+db.employees.aggregate([
+  {
+    $group:
+         {
+           _id: null,
+           maxSalary: { $max: "$salary" }
+         }
+  },
+  {
+    $project:{
+      _id: 0
+    }
+  }
+]);
 
 print("Query 11")
 // The name of the departments with the highest average salary
