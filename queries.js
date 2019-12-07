@@ -140,30 +140,32 @@ print("Query 08")
 //TODO
 db.employees.aggregate([
   {
-
     $match: {
       department: {
         $exists: true,
         $ne: null
       }
-
     }
   },
   {
     $group: {
-      _id: "$department.name",
-      number_of_employees: { $sum: 1 }
+      _id: "$department",
+      number_of_employees: {
+         $sum: 1
+       }
     }
   },
   {
     $match:{
       number_of_employees : { $gte: 5 }
     }
-  }
+  },
   {
-    $group: {
-      _id: "$department.name"
+    $project: {
+      _id: 0,
+      name: "$_id.name"
     }
+  }
 ]);
 
 print("Query 09")
@@ -247,7 +249,6 @@ db.employees.aggregate([
 
 print("Query 12")
 // For each city in which a mission took place, its name (output field "city") and the number of missions in that city
-//TODO
 db.employees.aggregate([
   {
     // to exclude null elements
