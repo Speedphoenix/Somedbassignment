@@ -211,6 +211,36 @@ print("Query 12")
 
 print("Query 13")
 // The name of the departments with at most 5 employees
+db.employees.aggregate([
+  {
+    $match: {
+      department: {
+        $exists: true,
+        $ne: null
+      }
+    }
+  },
+  {
+    $group: {
+      _id: "$department",
+      nbEmployees: {
+        $sum: 1
+      }
+    }
+  },
+  {
+    $match: {
+      nbEmployees: { $lte: 5 }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      name: "$_id.name"
+    }
+  }
+]);
+
 
 print("Query 14")
 // The average salary of analysts
@@ -224,19 +254,34 @@ db.employees.find({
 
 print("Query 15")
 // The lowest of the per-job average salary
+db.employees.aggregate([
+  {
+    $group: {
+      _id: "$job",
+      averageSalary: {
+        $avg: "$salary"
+      }
+    }
+  },
+  {
+    $sort: { averageSalary: 1 }
+  },
+  {
+    $limit: 1
+  },
+  {
+    $project: {
+      _id: 0, // remove this line to have the name of the job as well
+      lowestAvgSalary: "$averageSalary"
+    }
+  }
+]);
 
 print("Query 16")
 // For each department: its name and the highest salary in that department
 
 print("Query 17")
 // The number of employees
-//POSSIBLE
-db.employees.find({
-
-},{
-	"COUNT(*)": 1
-}
-);
 
 print("Query 18")
 // One of the employees, with pretty printing (2 methods)

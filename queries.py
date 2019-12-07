@@ -162,12 +162,68 @@ print("Query 12")
 
 print("Query 13")
 # The name of the departments with at most 5 employees
+pipeline13 = [
+    {
+        "$match": {
+            "department": {
+                "$exists": True,
+                "$ne": None
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$department",
+            "nbEmployees": {
+                "$sum": 1
+            }
+        }
+    },
+    {
+        "$match": {
+            "nbEmployees": { "$lte": 5 }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "name": "$_id.name"
+        }
+    }
+]
+
+for el in employees.aggregate(pipeline13):
+    print(el)
 
 print("Query 14")
 # The average salary of analysts
 
 print("Query 15")
 # The lowest of the per-job average salary
+pipeline15 = [
+    {
+        "$group": {
+            "_id": "$job",
+            "averageSalary": {
+                "$avg": "$salary"
+            }
+        }
+    },
+    {
+        "$sort": { "averageSalary": 1 }
+    },
+    {
+        "$limit": 1
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "lowestAvgSalary": "$averageSalary"
+        }
+    }
+]
+for el in employees.aggregate(pipeline15):
+    print(el)
 
 print("Query 16")
 # For each department: its name and the highest salary in that department
