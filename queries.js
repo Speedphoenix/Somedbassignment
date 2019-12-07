@@ -38,13 +38,13 @@ db.employees.aggregate([
   {
     $group : {
       _id: null,
-      lowest: {$min: "$salary"},
-      average: {$avg: "$salary"},
-      highest: {$max: "$salary"}
+      lowest: { $min: "$salary" },
+      average: { $avg: "$salary" },
+      highest: { $max: "$salary" }
     }
   },
   {
-    $project: {_id: 0}
+    $project: { _id: 0}
   }
 ]);
 
@@ -201,11 +201,10 @@ print("Query 10")
 
 db.employees.aggregate([
   {
-    $group:
-         {
-           _id: null,
-           maxSalary: { $max: "$salary" }
-         }
+    $group: {
+      _id: null,
+      maxSalary: { $max: "$salary" }
+    }
   },
   {
     $project:{
@@ -266,7 +265,7 @@ db.employees.aggregate([
   },
   {
    $unwind: "$missions"
- },
+  },
   {
     $group: {
       _id: "$missions.location",
@@ -388,9 +387,18 @@ db.employees.aggregate([
 print("Query 17")
 // The number of employees
 //POSSIBLE
-db.employees.aggregate( [
-   { $group: { _id: null, number_of_employees: { $sum: 1 } } },
-   { $project: { _id: 0 } }
+db.employees.aggregate([
+  {
+    $group: {
+      _id: null,
+      number_of_employees: { $sum: 1 }
+    }
+  },
+  {
+    $project: {
+      _id: 0
+    }
+  }
 ]);
 
 print("Query 18")
@@ -414,18 +422,10 @@ print("Query 20")
 // The name and salary of all the employees (without the field _id)
 db.employees.aggregate([
   {
-    // to exclude null elements
-    $match: {
-      name: {
-        $exists: true,
-        $ne: null
-      }
-    }
-  },
-  {
-    $group: {
-      _id: "$name",
-      "salary" : { "$first": "$salary"}
+    $project: {
+      _id: 0,
+      $name: 1,
+      $salary: 1
     }
   }
 ]);
