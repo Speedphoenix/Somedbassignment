@@ -259,9 +259,18 @@ db.employees.aggregate([
     }
   },
   {
+    $project: {
+      _id: 0,
+      missions: 1
+    }
+  },
+  {
+   $unwind: "$missions"
+ },
+  {
     $group: {
       _id: "$missions.location",
-      number_of_missions: { $sum: 1 }
+      sum: { $sum: 1 }
     }
   }
 ]);
