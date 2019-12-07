@@ -218,12 +218,25 @@ print("Query 13")
 print("Query 14")
 // The average salary of analysts
 //POSSIBLE
-db.employees.find({
-	"JOB " :  "ANALYST"
-},{
-	"AVG(SAL)": 1
-}
-);
+db.employees.aggregate([
+  {
+    $match:{
+      job : "analyst"
+    }
+  },
+  {
+    $group:
+         {
+           _id: null,
+           avgSalary: { $avg: "$salary" }
+         }
+  },
+  {
+    $project:{
+      _id: 0
+    }
+  }
+]);
 
 print("Query 15")
 // The lowest of the per-job average salary
