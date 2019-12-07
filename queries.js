@@ -15,7 +15,22 @@ db.employees.find({ "job": "clerk" }, { "salary": 1, "_id": 0 }).sort({salary:-1
 
 print("Query 02")
 // The total salary of managers
+/// POSSIBLE
 
+db.employees.aggregate([
+  {
+    $match :
+    {
+      job : "manager"
+    }
+  },
+  {
+    $group: {
+      _id: "$job",
+      sumSalary: { $sum: "$salary" }
+    }
+  }
+]);
 
 print("Query 03")
 // The lowest, average and highest salary of the employees
@@ -36,7 +51,15 @@ db.employees.aggregate([
 
 print("Query 04")
 // The name of the departments
+//POSSIBLE
 
+db.employees.aggregate([
+  {
+    $group: {
+      _id: "$job"
+    }
+  }
+]);
 
 print("Query 05")
 // For each job: the job and the average salary for that job
@@ -52,6 +75,16 @@ db.employees.aggregate([
 
 print("Query 06")
 // For each department: its name, the number of employees and the average salary in that department (null departments excluded)
+/// in sql :SELECT COUNT(*) AS count, AVG(SAL) AS average, dept.DNAME FROM emp INNER JOIN dept ON emp.DID = dept.DID GROUP BY dept.DNAME
+//POSSIBLE
+db.employees.aggregate([
+  {
+    $group: {
+      _id: {department : "$name"},
+      countEmployees: { $sum:{1} }
+    }
+  }
+]);
 
 
 print("Query 07")
@@ -119,7 +152,13 @@ db.employees.aggregate([
 
 print("Query 10")
 // The highest salary
+//POSSIBLE
+db.employees.find({
 
+},{
+	"Max(SAL)": 1
+}
+);
 
 print("Query 11")
 // The name of the departments with the highest average salary
@@ -160,6 +199,13 @@ print("Query 13")
 
 print("Query 14")
 // The average salary of analysts
+//POSSIBLE
+db.employees.find({
+	"JOB " :  "ANALYST"
+},{
+	"AVG(SAL)": 1
+}
+);
 
 print("Query 15")
 // The lowest of the per-job average salary
@@ -169,6 +215,13 @@ print("Query 16")
 
 print("Query 17")
 // The number of employees
+//POSSIBLE
+db.employees.find({
+
+},{
+	"COUNT(*)": 1
+}
+);
 
 print("Query 18")
 // One of the employees, with pretty printing (2 methods)
