@@ -137,7 +137,34 @@ db.employees.aggregate([
 
 print("Query 08")
 // The name of the departments with at least 5 employees (null departments excluded)
+//TODO
+db.employees.aggregate([
+  {
 
+    $match: {
+      department: {
+        $exists: true,
+        $ne: null
+      }
+
+    }
+  },
+  {
+    $group: {
+      _id: "$department.name",
+      number_of_employees: { $sum: 1 }
+    }
+  },
+  {
+    $match:{
+      number_of_employees : { $gte: 5 }
+    }
+  }
+  {
+    $group: {
+      _id: "$department.name"
+    }
+]);
 
 print("Query 09")
 // The cities where at least 2 missions took place
@@ -263,6 +290,7 @@ db.employees.aggregate( [
 
 print("Query 18")
 // One of the employees, with pretty printing (2 methods)
+db.employees.find({"name":"Scott"}).pretty();
 
 print("Query 19")
 // All the information about employees, except their salary, commission and missions
