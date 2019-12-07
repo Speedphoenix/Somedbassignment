@@ -55,8 +55,23 @@ print("Query 04")
 
 db.employees.aggregate([
   {
+    // to exclude null elements
+    $match: {
+      department: {
+        $exists: true,
+        $ne: null
+      }
+    }
+  },
+  {
     $group: {
-      _id: "$job"
+      _id: "$department"
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      deptname: "$_id.name"
     }
   }
 ]);
