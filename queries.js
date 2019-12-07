@@ -247,12 +247,10 @@ print("Query 16")
 print("Query 17")
 // The number of employees
 //POSSIBLE
-db.employees.find({
-
-},{
-	"COUNT(*)": 1
-}
-);
+db.employees.aggregate( [
+   { $group: { _id: null, number_of_employees: { $sum: 1 } } },
+   { $project: { _id: 0 } }
+] );
 
 print("Query 18")
 // One of the employees, with pretty printing (2 methods)
