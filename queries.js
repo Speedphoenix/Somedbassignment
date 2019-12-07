@@ -15,8 +15,6 @@ db.employees.find({ "job": "clerk" }, { "salary": 1, "_id": 0 }).sort({salary:-1
 
 print("Query 02")
 // The total salary of managers
-/// POSSIBLE
-
 db.employees.aggregate([
   {
     $match :
@@ -32,11 +30,12 @@ db.employees.aggregate([
   }
 ]);
 
+
 print("Query 03")
 // The lowest, average and highest salary of the employees
 db.employees.aggregate([
   {
-    $group : {
+    $group: {
       _id: null,
       lowest: { $min: "$salary" },
       average: { $avg: "$salary" },
@@ -51,8 +50,6 @@ db.employees.aggregate([
 
 print("Query 04")
 // The name of the departments
-//POSSIBLE
-
 db.employees.aggregate([
   {
     // to exclude null elements
@@ -65,10 +62,17 @@ db.employees.aggregate([
   },
   {
     $group: {
-      _id: "$department.name"
+      _id: "$department"
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      name: "$_id.name"
     }
   }
 ]);
+
 
 print("Query 05")
 // For each job: the job and the average salary for that job
@@ -84,7 +88,6 @@ db.employees.aggregate([
 
 print("Query 06")
 // For each department: its name, the number of employees and the average salary in that department (null departments excluded)
-//POSSIBLE
 db.employees.aggregate([
   {
     // to exclude null elements
@@ -137,7 +140,6 @@ db.employees.aggregate([
 
 print("Query 08")
 // The name of the departments with at least 5 employees (null departments excluded)
-//TODO
 db.employees.aggregate([
   {
     $match: {
@@ -199,8 +201,6 @@ db.employees.aggregate([
 
 print("Query 10")
 // The highest salary
-//POSSIBLE
-
 db.employees.aggregate([
   {
     $group: {
@@ -209,7 +209,7 @@ db.employees.aggregate([
     }
   },
   {
-    $project:{
+    $project: {
       _id: 0
     }
   }
@@ -218,14 +218,14 @@ db.employees.aggregate([
 print("Query 11")
 // The name of the departments with the highest average salary
 db.employees.aggregate([
-  /*{
+  {
     $match: {
       department: {
         $exists: true,
         $ne: null
       }
     }
-  },*/
+  },
   {
     $group: {
       _id: "$department",
@@ -241,7 +241,10 @@ db.employees.aggregate([
     $limit: 1
   },
   {
-    $project: { _id: 1 }
+    $project: {
+      _id: 0,
+      name: "$_id.name"
+    }
   }
 ]);
 
@@ -249,15 +252,6 @@ db.employees.aggregate([
 print("Query 12")
 // For each city in which a mission took place, its name (output field "city") and the number of missions in that city
 db.employees.aggregate([
-  {
-    // to exclude null elements
-    $match: {
-      missions: {
-        $exists: true,
-        $ne: null
-      }
-    }
-  },
   {
     $project: {
       _id: 0,
@@ -272,6 +266,13 @@ db.employees.aggregate([
       _id: "$missions.location",
       sum: { $sum: 1 }
     }
+  },
+  {
+    $project: {
+      _id: 0,
+      city: "$_id",
+      nbmissions: "$sum",
+    }
   }
 ]);
 
@@ -279,14 +280,14 @@ db.employees.aggregate([
 print("Query 13")
 // The name of the departments with at most 5 employees
 db.employees.aggregate([
-  {
+  /*{
     $match: {
       department: {
         $exists: true,
         $ne: null
       }
     }
-  },
+  },*/
   {
     $group: {
       _id: "$department",
@@ -310,10 +311,9 @@ db.employees.aggregate([
 
 print("Query 14")
 // The average salary of analysts
-//POSSIBLE
 db.employees.aggregate([
   {
-    $match:{
+    $match: {
       job : "analyst"
     }
   },
@@ -324,7 +324,7 @@ db.employees.aggregate([
     }
   },
   {
-    $project:{
+    $project: {
       _id: 0
     }
   }
@@ -387,7 +387,6 @@ db.employees.aggregate([
 
 print("Query 17")
 // The number of employees
-//POSSIBLE
 db.employees.aggregate([
   {
     $group: {
@@ -425,8 +424,8 @@ db.employees.aggregate([
   {
     $project: {
       _id: 0,
-      $name: 1,
-      $salary: 1
+      name: 1,
+      salary: 1
     }
   }
 ]);

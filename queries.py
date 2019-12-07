@@ -12,6 +12,20 @@ print(employees.find({"job": "clerk"}, { "salary": 1, "_id": 0 }).sort("salary",
 
 print("Query 02")
 # The total salary of managers
+print(employees.aggregate([
+    {
+        "$match":
+        {
+            "job": "manager"
+        }
+    },
+    {
+        "$group": {
+            "_id": "$job",
+            "sumSalary": { "$sum": "$salary" }
+        }
+    }
+]).next())
 
 
 print("Query 03")
@@ -36,6 +50,30 @@ print(employees.aggregate(pipeline3).next())
 
 print("Query 04")
 # The name of the departments
+pipeline4 = [
+    {
+        # to exclude null elements
+        "$match": {
+            "department": {
+                "$exists": True,
+                "$ne": None
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$department"
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "name": "$_id.name"
+        }
+    }
+]
+for el in employees.aggregate(pipeline4):
+    print(el)
 
 
 print("Query 05")
@@ -54,6 +92,26 @@ for el in employees.aggregate(pipeline5):
 
 print("Query 06")
 # For each department: its name, the number of employees and the average salary in that department (null departments excluded)
+pipeline6 = [
+  {
+    # to exclude null elements
+    "$match": {
+      "department": {
+        "$exists": True,
+        "$ne": None
+      }
+    }
+  },
+  {
+    "$group": {
+      "_id": "$department.name",
+      "averageSalary": { "$avg": "$salary" },
+      "number_of_employees": { "$sum": 1 }
+    }
+  }
+]
+for el in employees.aggregate(pipeline6):
+    print(el)
 
 
 print("Query 07")
@@ -88,6 +146,37 @@ print(employees.aggregate(pipeline7).next())
 
 print("Query 08")
 # The name of the departments with at least 5 employees (null departments excluded)
+pipeline8 = [
+    {
+        "$match": {
+            "department": {
+                "$exists": True,
+                "$ne": None
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": "$department",
+            "number_of_employees": {
+                 "$sum": 1
+             }
+        }
+    },
+    {
+        "$match":{
+            "number_of_employees" : { "$gte": 5 }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "name": "$_id.name"
+        }
+    }
+]
+for el in employees.aggregate(pipeline8):
+    print(el)
 
 
 print("Query 09")
@@ -123,6 +212,19 @@ for el in employees.aggregate(pipeline9):
 
 print("Query 10")
 # The highest salary
+print(employees.aggregate([
+    {
+        "$group": {
+            "_id": None,
+            "maxSalary": { "$max": "$salary" }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0
+        }
+    }
+]).next())
 
 
 print("Query 11")
@@ -151,7 +253,10 @@ pipeline11 = [
         "$limit": 1
     },
     {
-        "$project": { "_id": 1 }
+        "$project": {
+          "_id": 0,
+          "name": "$_id.name"
+        }
     }
 ]
 print(employees.aggregate(pipeline11).next())
@@ -159,18 +264,44 @@ print(employees.aggregate(pipeline11).next())
 
 print("Query 12")
 # For each city in which a mission took place, its name (output field "city") and the number of missions in that city
+pipeline12 = [
+    {
+        "$project": {
+            "_id": 0,
+            "missions": 1
+        }
+    },
+    {
+     "$unwind": "$missions"
+    },
+    {
+        "$group": {
+            "_id": "$missions.location",
+            "sum": { "$sum": 1 }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0,
+            "city": "$_id",
+            "nbmissions": "$sum",
+        }
+    }
+]
+for el in employees.aggregate(pipeline12):
+    print(el)
 
 print("Query 13")
 # The name of the departments with at most 5 employees
 pipeline13 = [
-    {
-        "$match": {
-            "department": {
-                "$exists": True,
-                "$ne": None
-            }
-        }
-    },
+    # {
+    #     "$match": {
+    #         "department": {
+    #             "$exists": True,
+    #             "$ne": None
+    #         }
+    #     }
+    # },
     {
         "$group": {
             "_id": "$department",
@@ -195,8 +326,28 @@ pipeline13 = [
 for el in employees.aggregate(pipeline13):
     print(el)
 
+
 print("Query 14")
 # The average salary of analysts
+print(employees.aggregate([
+    {
+        "$match": {
+            "job" : "analyst"
+        }
+    },
+    {
+        "$group": {
+            "_id": None,
+            "avgSalary": { "$avg": "$salary" }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0
+        }
+    }
+]).next())
+
 
 print("Query 15")
 # The lowest of the per-job average salary
@@ -228,14 +379,14 @@ for el in employees.aggregate(pipeline15):
 print("Query 16")
 # For each department: its name and the highest salary in that department
 pipeline16 = [
-    {
-        "$match": {
-            "department": {
-                "$exists": True,
-                "$ne": None
-            }
-        }
-    },
+    # {
+    #     "$match": {
+    #         "department": {
+    #             "$exists": True,
+    #             "$ne": None
+    #         }
+    #     }
+    # },
     {
         "$group": {
             "_id": "$department",
@@ -255,16 +406,37 @@ pipeline16 = [
 for el in employees.aggregate(pipeline16):
     print(el)
 
+
 print("Query 17")
 # The number of employees
+print(employees.aggregate([
+    {
+        "$group": {
+            "_id": None,
+            "number_of_employees": { "$sum": 1 }
+        }
+    },
+    {
+        "$project": {
+            "_id": 0
+        }
+    }
+]).next())
+
 
 print("Query 18")
 # One of the employees, with pretty printing (2 methods)
+print(employees.find_one())
+print(employees.find().next())
+
 
 print("Query 19")
 # All the information about employees, except their salary, commission and missions
-for el in employees.aggregate(pipeline15):
-    print(el)
+for el in employees.find({}, { "salary": 0, "commission": 0, "missions": 0 }):
+      print(el)
+
 
 print("Query 20")
 # The name and salary of all the employees (without the field _id)
+for el in employees.find({}, { "_id": 0, "name": 1, "salary": 1 }):
+      print(el)
