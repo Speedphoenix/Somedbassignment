@@ -290,10 +290,19 @@ db.employees.aggregate( [
 
 print("Query 18")
 // One of the employees, with pretty printing (2 methods)
-db.employees.find({"name":"Scott"}).pretty();
+db.employees.find({"job":"manager"}).pretty();
+db.employees.find({"job":"manager"}).forEach(printjson);
 
 print("Query 19")
 // All the information about employees, except their salary, commission and missions
 
 print("Query 20")
 // The name and salary of all the employees (without the field _id)
+db.employees.aggregate([
+  {
+    $group: {
+      _id: "name",
+      salary:  "$salary"    
+    }
+  }
+]);
