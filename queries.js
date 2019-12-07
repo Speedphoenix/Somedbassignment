@@ -7,7 +7,7 @@ db = db.getSiblingDB("company");
 print("Query 01");
 // The highest salary of clerks
 
-db.employees.find({ "job": "clerk" }, { "salary": 1, "_id": 0 }).sort({salary:-1}).limit(1)
+db.employees.find({ "job": "clerk" }, { "salary": 1, "_id": 0 }).sort({salary:-1}).limit(1);
 
 // or, to get the whole employee instead of just the salary
 // db.employees.find({ "job": "clerk" }).sort({salary:-1}).limit(1)
@@ -65,13 +65,7 @@ db.employees.aggregate([
   },
   {
     $group: {
-      _id: "$department"
-    }
-  },
-  {
-    $project: {
-      _id: 0,
-      deptname: "$_id.name"
+      _id: "$department.name"
     }
   }
 ]);
@@ -90,13 +84,22 @@ db.employees.aggregate([
 
 print("Query 06")
 // For each department: its name, the number of employees and the average salary in that department (null departments excluded)
-/// in sql :SELECT COUNT(*) AS count, AVG(SAL) AS average, dept.DNAME FROM emp INNER JOIN dept ON emp.DID = dept.DID GROUP BY dept.DNAME
 //POSSIBLE
 db.employees.aggregate([
   {
+    // to exclude null elements
+    $match: {
+      department: {
+        $exists: true,
+        $ne: null
+      }
+    }
+  },
+  {
     $group: {
-      _id: {department : "$name"},
-      countEmployees: { $sum:{1} }
+      _id: "$department.name",
+      averageSalary: { $avg: "$salary" },
+      number_of_employees: { $sum: 1 }
     }
   }
 ]);
@@ -168,12 +171,21 @@ db.employees.aggregate([
 print("Query 10")
 // The highest salary
 //POSSIBLE
-db.employees.find({
 
-},{
-	"Max(SAL)": 1
-}
-);
+db.employees.aggregate([
+  {
+    $group:
+         {
+           _id: null,
+           maxSalary: { $max: "$salary" }
+         }
+  },
+  {
+    $project:{
+      _id: 0
+    }
+  }
+]);
 
 print("Query 11")
 // The name of the departments with the highest average salary
@@ -245,12 +257,25 @@ db.employees.aggregate([
 print("Query 14")
 // The average salary of analysts
 //POSSIBLE
-db.employees.find({
-	"JOB " :  "ANALYST"
-},{
-	"AVG(SAL)": 1
-}
-);
+db.employees.aggregate([
+  {
+    $match:{
+      job : "analyst"
+    }
+  },
+  {
+    $group:
+         {
+           _id: null,
+           avgSalary: { $avg: "$salary" }
+         }
+  },
+  {
+    $project:{
+      _id: 0
+    }
+  }
+]);
 
 print("Query 15")
 // The lowest of the per-job average salary
@@ -282,6 +307,11 @@ print("Query 16")
 
 print("Query 17")
 // The number of employees
+//POSSIBLE
+db.employees.aggregate( [
+   { $group: { _id: null, number_of_employees: { $sum: 1 } } },
+   { $project: { _id: 0 } }
+]);
 
 print("Query 18")
 // One of the employees, with pretty printing (2 methods)
