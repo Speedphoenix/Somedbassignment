@@ -247,6 +247,24 @@ db.employees.aggregate([
 
 print("Query 12")
 // For each city in which a mission took place, its name (output field "city") and the number of missions in that city
+//TODO
+db.employees.aggregate([
+  {
+    // to exclude null elements
+    $match: {
+      missions: {
+        $exists: true,
+        $ne: null
+      }
+    }
+  },
+  {
+    $group: {
+      _id: "$missions.location",
+      number_of_missions: { $sum: 1 }
+    }
+  }
+]);
 
 print("Query 13")
 // The name of the departments with at most 5 employees
